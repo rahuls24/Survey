@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import Qsn from './Qsn';
 var firebase = require('firebase');
 
 var firebaseConfig = {
@@ -15,11 +14,13 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 class Login extends Component {
 
+
+    // Method for signup
+
     signup() {
         const email=this.refs.email.value
         const password=this.refs.password.value
         this.setState({password: password})
-        console.log(email,password);
         const auth = firebase.auth()
   
         const promise = auth.createUserWithEmailAndPassword(email,password)
@@ -29,7 +30,6 @@ class Login extends Component {
               email: userCreds.user.email
             })
             localStorage.setItem('email',userCreds.user.email);
-           // console.log(user);
             this.setState({err: err})
             this.setState({email: userCreds.user.email});
             this.setState({users: userCreds})
@@ -37,7 +37,6 @@ class Login extends Component {
         });
         promise.catch(e => {
             var err = e.message;
-          //  console.log(err);
             this.setState({err: err});
             
   
@@ -45,39 +44,34 @@ class Login extends Component {
         });
     }    
   
+    // method for sinin
     sinin()
     {
       const email = this.refs.email.value;
       const password = this.refs.password.value;
       this.setState({password: password})
-    //  console.log(email, password);
-  
       const auth = firebase.auth();
   
       const promise = auth.signInWithEmailAndPassword(email, password);
   
       promise.then(userCreds => {
-        //console.log(24,userCreds,25,typeof userCreds,26)
         var err= "welcome"+userCreds.user.email;
         localStorage.setItem('email',userCreds.user.email);
         this.setState({err: err})
         this.setState({email: userCreds.user.email})
         this.setState({users: userCreds})
         this.setState({studentName: userCreds.user.email})
-        //console.log(23,this.state.user);
+      
   
     })
   
     promise.catch(e => {
         var err = e.message
-     //   console.log(err);
         this.setState({err: err})
     })
   
     }
-  //mcq
-
-  //jjjjjjjjjjjjj
+  // methods to store response of users
   answerSelected(event){
     var answers = this.state.answers;
     if(event.target.name === 'answer1'){
@@ -89,11 +83,10 @@ class Login extends Component {
     }
 
     this.setState({answers: answers}, function(){
-     // console.log(this.state);
     });
   }
 
-  //kkkk;kl;k;kll;k;kk;;kk;;kl
+  //method to store respond on firebase
   questionSubmit(){
     var answers=this.state.answers
 
@@ -103,7 +96,6 @@ class Login extends Component {
         var email = user.email;
         var uid = user.uid;
         var providerData = user.providerData;
-       // console.log(answers)
        firebase.database().ref('users/'+uid+"res").set({
          email: email,
         answers: answers
@@ -118,7 +110,7 @@ class Login extends Component {
 
    
 }
-//dkkkdklkkdkkllldkkl
+//constructor for setting the state and binding of method
       constructor(props) {
       super(props)
     
