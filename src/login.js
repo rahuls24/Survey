@@ -1,14 +1,16 @@
 import React, { Component } from 'react'
 var firebase = require('firebase');
 
+
+//you can take this setup by resistering on firebase
 var firebaseConfig = {
-  apiKey: "AIzaSyDc7czI_lz_38dxFYEwx1HfhFVfrYhTIL8",
-  authDomain: "feedback-d68b2.firebaseapp.com",
-  databaseURL: "https://feedback-d68b2.firebaseio.com",
-  projectId: "feedback-d68b2",
+  apiKey: "Your Api Key",
+  authDomain: "",
+  databaseURL: "",
+  projectId: "",
   storageBucket: "",
-  messagingSenderId: "544999669401",
-  appId: "1:544999669401:web:b23621a8050d0747"
+  messagingSenderId: "",
+  appId: ""
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
