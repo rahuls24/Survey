@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import Login from './login';
+import RequestTable from './RequestTable';
 
 
 class App extends Component {
@@ -11,7 +12,7 @@ class App extends Component {
 
     return (
       <div>
-        <Login />
+        <RequestTable />
       </div>
     )
   }
