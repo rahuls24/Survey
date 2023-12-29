@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-table";
 const tableData = [
   {
+    id: '11',
     title: "Request 1",
     sentOn: new Date("2023-11-01").toISOString(),
     dueDate: new Date("2023-11-02").toISOString(),
@@ -17,6 +18,7 @@ const tableData = [
     isRecurring: true,
   },
   {
+    id: '12',
     title: "Request 2",
     sentOn: new Date("2023-11-03").toISOString(),
     dueDate: new Date("2023-11-04").toISOString(),
@@ -25,6 +27,7 @@ const tableData = [
     isRecurring: false,
   },
   {
+    id: '13',
     title: "Request 3",
     sentOn: new Date("2023-10-08").toISOString(),
     dueDate: new Date("2023-10-22").toISOString(),
@@ -61,6 +64,7 @@ const columns = [
         }}
       />
     ),
+    enableSorting:false,
   }),
   columnHelper.accessor("title", {
     cell: (props) => <RequestTitle row={props.row} value={props.getValue()} />,
@@ -76,31 +80,37 @@ const columns = [
     header: "Due Date",
     // sortType: 'datetime',
   }),
+  columnHelper.accessor("documents", {
+    cell: (props) => <span>{`${props.getValue()} Requested`}</span> ,
+    header: "Documents",
+    // sortType: 'datetime',
+  }),
   columnHelper.accessor("status", {
     cell: (props) => <Status value={props.getValue()} />,
     header: "Status",
     enableSorting:false,
     
   }),
-  columnHelper.accessor("edit", {
-    cell: (props) => <EditMenu row={props.row} />,
-    header: "",
-  }),
 ];
 function RequestTable({ data=tableData }) {
   const [sorting, setSorting] = React.useState([])
+  const [rowSelection, setRowSelection] = React.useState({})
   const table = useReactTable({
     data,
     columns,
     state: {
       sorting,
+      rowSelection,
     },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    onRowSelectionChange: setRowSelection,
     debugTable: true,
   });
-
+  console.log({
+    rowSelection
+  })
   return (
     <table>
       <thead>
@@ -179,22 +189,7 @@ function Status({ value }) {
   return <span style={style}>{value}</span>;
 }
 
-function EditMenu({ row }) {
-  // Define the edit and delete actions
-  const edit = () => {
-    // Do something to edit the row
-  };
-  const deleteHandler = () =>{
 
-  }
-  // Return a menu with two options
-  return (
-    <div className="">
-      <button onClick={edit}>Edit</button>
-      <button onClick={deleteHandler}>Delete</button>
-    </div>
-  );
-}
 
 
 

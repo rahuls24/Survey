@@ -1,167 +1,164 @@
-import React from 'react';
-import { useTable, useSortBy, useRowSelect } from 'react-table';
+import React, { useEffect, useState } from 'react'
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+  
+} from "@tanstack/react-table";
+import GenericTable from './table/GenericTable';
 
-const sampleData = [
+const tableData = [
   {
-    id: 1,
-    selected: false, // Add this property for row selection
-    title: 'Sample Request 1',
-    recurring: false,
-    sentOn: '2023-11-01T08:00:00Z',
-    dueDate: '2023-11-10T08:00:00Z',
-    documents: 3,
-    status: 'Completed',
-  },
-  {
-    id: 2,
-    selected: false, // Add this property for row selection
-    title: 'Recurring Request',
-    recurring: true,
-    sentOn: '2023-11-05T08:00:00Z',
-    dueDate: '2023-11-15T08:00:00Z',
-    documents: 5,
-    status: 'Pending',
-  },
-  {
-    id: 3,
-    selected: false, // Add this property for row selection
-    title: 'Sample Request 3',
-    recurring: false,
-    sentOn: '2023-11-10T08:00:00Z',
-    dueDate: '2023-11-20T08:00:00Z',
-    documents: 2,
-    status: 'In Progress',
-  },
-  {
-    id: 4,
-    selected: false, // Add this property for row selection
-    title: 'Another Recurring Request',
-    recurring: true,
-    sentOn: '2023-11-15T08:00:00Z',
-    dueDate: '2023-11-25T08:00:00Z',
+    id: '11',
+    title: "Request 1",
+    sentOn: new Date("2023-11-01").toISOString(),
+    dueDate: new Date("2023-11-02").toISOString(),
     documents: 4,
-    status: 'Pending',
+    status: "Completed",
+    isRecurring: true,
   },
   {
-    id: 5,
-    selected: false, // Add this property for row selection
-    title: 'Sample Request 5',
-    recurring: false,
-    sentOn: '2023-11-20T08:00:00Z',
-    dueDate: '2023-11-30T08:00:00Z',
-    documents: 1,
-    status: 'Incomplete',
+    id: '12',
+    title: "Request 2",
+    sentOn: new Date("2023-11-03").toISOString(),
+    dueDate: new Date("2023-11-04").toISOString(),
+    documents: 2,
+    status: "Pending",
+    isRecurring: false,
   },
+  {
+    id: '13',
+    title: "Request 3",
+    sentOn: new Date("2023-10-08").toISOString(),
+    dueDate: new Date("2023-10-22").toISOString(),
+    documents: 2,
+    status: "Pending",
+    isRecurring: false,
+  },
+  // ...more rows
 ];
+const columnHelper = createColumnHelper();
+const columns = [
+  columnHelper.accessor("selection", {
+    cell: ({ row }) => (
+      <div className="">
+        <IndeterminateCheckbox
+          {...{
+            checked: row.getIsSelected(),
+            disabled: !row.getCanSelect(),
+            indeterminate: row.getIsSomeSelected(),
+            onChange: row.getToggleSelectedHandler(),
+          }}
+        />
+      </div>
+    ),
+     header: ({ table }) => (
+      <IndeterminateCheckbox
+        {...{
+          checked: table.getIsAllRowsSelected(),
+          indeterminate: table.getIsSomeRowsSelected(),
+          onChange: table.getToggleAllRowsSelectedHandler(),
+        }}
+      />
+    ),
+    enableSorting:false,
+  }),
+  columnHelper.accessor("title", {
+    cell: (props) => <RequestTitle row={props.row} value={props.getValue()} />,
+    header: "Request Title",
+  }),
+  columnHelper.accessor("sentOn", {
+    cell: (props) => <DateView value={props.getValue()} />,
+    header: "Sent On",
+    sortType: 'datetime',
+  }),
+  columnHelper.accessor("dueDate", {
+    cell: (props) => <DateView value={props.getValue()} />,
+    header: "Due Date",
+    // sortType: 'datetime',
+  }),
+  columnHelper.accessor("documents", {
+    cell: (props) => <span>{`${props.getValue()} Requested`}</span> ,
+    header: "Documents",
+    // sortType: 'datetime',
+  }),
+  columnHelper.accessor("status", {
+    cell: (props) => <Status value={props.getValue()} />,
+    header: "Status",
+    enableSorting:false,
+    
+  }),
+];
+function Table() {
+  const [selectedRows, setSelectedRows] = useState({});
 
+  const handleRowSelectionChange = (newRowSelection) => {
+    setSelectedRows(newRowSelection);
+    // Do whatever you need with the selected rows
+  };
+  console.log({
+    selectedRows
+  })
+  return (
+    <GenericTable data={tableData} columns={columns}  onRowSelectionChange={handleRowSelectionChange} />
+  )
+}
 
-
-
-const Table = ({ data=sampleData }) => {
-  const columns = React.useMemo(
-    () => [
-      {
-        id: 'selection',
-        Header: ({ getToggleAllRowsSelectedProps }) => (
-          <input type="checkbox" {...getToggleAllRowsSelectedProps()} />
-        ),
-        Cell: ({ row }) => <input type="checkbox" {...row.getToggleRowSelectedProps()} />,
-      },
-      {
-        Header: 'Request Title',
-        accessor: 'title',
-        Cell: ({ row }) => (
-          <>
-            {row.original.recurring && <span>🔄</span>}
-            {row.values.title}
-          </>
-        ),
-      },
-      {
-        Header: 'Sent On',
-        accessor: 'sentOn',
-        Cell: ({ value }) => new Date(value).toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' }),
-        sortType: 'datetime',
-      },
-      {
-        Header: 'Due Date',
-        accessor: 'dueDate',
-        Cell: ({ value }) => new Date(value).toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' }),
-        sortType: 'datetime',
-      },
-      {
-        Header: 'Documents',
-        accessor: 'documents',
-        Cell: ({ value }) => `${value} Requested`,
-      },
-      {
-        Header: 'Status',
-        accessor: 'status',
-        Cell: ({ value }) => <span style={{ color: value === 'Completed' ? 'green' : 'red' }}>{value}</span>,
-      },
-    ],
-    []
+export default Table
+// Helper
+// Define a custom component for the request title column
+function RequestTitle({ row, value }) {
+  // Show a rotating arrow icon if the request is recurring
+  
+  const icon = row.original.recurring ? "🔄" : "";
+  return (
+    <span>
+      {icon} {value}
+    </span>
   );
+}
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    selectedFlatRows,
-  } = useTable(
-    {
-      columns,
-      data,
-    },
-    useSortBy,
-    useRowSelect,
-    hooks => {
-      hooks.visibleColumns.push(columns => [
-        {
-          id: 'selection',
-          Header: ({ getToggleAllRowsSelectedProps }) => (
-            <input type="checkbox" {...getToggleAllRowsSelectedProps()} />
-          ),
-          Cell: ({ row }) => <input type="checkbox" {...row.getToggleRowSelectedProps()} />,
-        },
-        ...columns,
-      ]);
+function DateView({ value }) {
+  // Format the date as Month DD YYYY
+  const date = new Date(value);
+  const options = { month: "long", day: "numeric", year: "numeric" };
+  return <span>{date.toLocaleDateString("en-US", options)}</span>;
+}
+
+function Status({ value }) {
+  // Apply a specific style based on the status value
+  const style = {
+    color: value === "Completed" ? "green" : "red",
+    fontWeight: "bold",
+  };
+  return <span style={style}>{value}</span>;
+}
+
+
+
+
+
+function IndeterminateCheckbox({
+  indeterminate,
+  className = '',
+  ...rest
+}) {
+  const ref = React.useRef(null)
+
+  useEffect(() => {
+    if (typeof indeterminate === 'boolean') {
+      ref.current.indeterminate = !rest.checked && indeterminate
     }
-  );
+  }, [ref, indeterminate, rest.checked])
 
   return (
-    <table {...getTableProps()} style={{ width: '100%', borderCollapse: 'collapse' }}>
-      <thead>
-        {headerGroups.map(headerGroup => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map(column => (
-              <th {...column.getHeaderProps(column.getSortByToggleProps())} style={{ borderBottom: '2px solid black', padding: '8px' }}>
-                {column.render('Header')}
-                <span>{column.isSorted ? (column.isSortedDesc ? ' ⬇️' : ' ⬆️') : ''}</span>
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-        {rows.map(row => {
-          prepareRow(row);
-          return (
-            <tr {...row.getRowProps()} style={{ borderBottom: '1px solid black', background: row.isSelected ? '#f7f7f7' : 'white' }}>
-              {row.cells.map(cell => (
-                <td {...cell.getCellProps()} style={{ padding: '8px' }}>
-                  {cell.render('Cell')}
-                </td>
-              ))}
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  );
-};
-
-
-export default Table;
+    <input
+      type="checkbox"
+      ref={ref}
+      className={className + ' cursor-pointer'}
+      {...rest}
+    />
+  )
+}
