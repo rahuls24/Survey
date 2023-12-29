@@ -1,0 +1,26 @@
+.table-container {
+  overflow-x: auto;
+}
+
+.table-container table {
+  min-width: 100%;
+}
+
+.table-container th:first-child,
+.table-container td:first-child,
+.table-container th:last-child,
+.table-container td:last-child {
+  position: sticky;
+  background-color: #f8f9fa; /* Customize the background color if needed */
+  z-index: 1;
+}
+
+.table-container th:first-child,
+.table-container td:first-child {
+  left: 0;
+}
+
+.table-container th:last-child,
+.table-container td:last-child {
+  right: 0;
+}

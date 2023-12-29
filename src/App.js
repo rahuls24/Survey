@@ -13,7 +13,7 @@ class App extends Component {
   render() {
 
     return (
-      <div>
+      <div style={{maxWidth:'800px'}}>
         <Table />
       </div>
     )

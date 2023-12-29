@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-table";
 import PropTypes from "prop-types";
 import React from "react";
-
+import "./GenericTable.css";
 function GenericTable({  data, columns, initialSorting = [], initialRowSelection = {}, onRowSelectionChange }) {
   const [sorting, setSorting] = React.useState(initialSorting);
   const [rowSelection, setRowSelection] = React.useState(initialRowSelection);
@@ -30,7 +30,8 @@ function GenericTable({  data, columns, initialSorting = [], initialRowSelection
   });
 
   return (
-    <table>
+    <div className="table-container">
+    <table className="">
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
@@ -72,6 +73,7 @@ function GenericTable({  data, columns, initialSorting = [], initialRowSelection
         ))}
       </tbody>
     </table>
+    </div>
   );
 }
 
